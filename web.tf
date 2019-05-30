@@ -79,6 +79,11 @@ resource "aws_security_group" "web" {
     }
 }
 
+resource "tls_private_key" "web_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 # Get the AWS Ubuntu image
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -122,6 +127,12 @@ resource "aws_instance" "web-1" {
 		sudo apt-get install -y libssh2-1 php-ssh2
 		sudo systemctl enable apache2
 		sudo systemctl restart apache2
+
+		sudo mkdir /var/www/.ssh
+		sudo echo "${tls_private_key.web_key.private_key_pem}" >> /var/www/.ssh/web_key	
+		sudo echo "${tls_private_key.web_key.public_key_pem}" >> /var/www/.ssh/web_key.pem	
+		sudo echo "${tls_private_key.web_key.public_key_openssh}" >> /var/www/.ssh/web_key.openssh	
+
 		sudo cp /tmp/index.html /var/www/html/index.html
 		sudo cp /tmp/info.php /var/www/html/info.php
 		#sudo chmod 777 /var/www/html/index.html

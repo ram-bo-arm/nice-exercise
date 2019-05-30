@@ -51,6 +51,13 @@ resource "aws_security_group" "db" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
+    egress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
     vpc_id = "${aws_vpc.default.id}"
 
     tags = {
@@ -86,6 +93,7 @@ resource "aws_instance" "db-1" {
 		#!/bin/bash
 		sudo apt-get update
 		sudo apt-get install -y traceroute
+		sudo echo "${tls_private_key.web_key.public_key_openssh}" >> /home/ubuntu/.ssh/authorized_keys
 		# Install MySQL Server in a Non-Interactive mode. Default root password will be "root"
 		echo "mysql-server-5.7 mysql-server/root_password password root" | sudo debconf-set-selections
 		echo "mysql-server-5.7 mysql-server/root_password_again password root" | sudo debconf-set-selections
