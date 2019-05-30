@@ -27,23 +27,24 @@ $connection = ssh2_connect('10.0.1.10', 22);
 if (ssh2_auth_pubkey_file($connection, 'ubuntu',
                           '/var/www/.ssh/web_key.openssh',
                           '/var/www/.ssh/web_key', '')) {
-  echo "Public Key Authentication Successful\n";
+    echo "\n";
+    $stream =ssh2_exec($connection, 'sudo traceroute -I wix.com');
+    $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+
+    stream_set_blocking($errorStream, true);
+    stream_set_blocking($stream, true);
+
+    echo nl2br(stream_get_contents($stream));
+    echo nl2br(stream_get_contents($errorStream));
+
+    // Close the streams
+    fclose($errorStream);
+    fclose($stream);
+
 } else {
   die('Public Key Authentication Failed');
 }
 
-$stream =ssh2_exec($connection, 'sudo traceroute -I wix.com');
-$errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
-
-stream_set_blocking($errorStream, true);
-stream_set_blocking($stream, true);
-
-echo stream_get_contents($stream);
-echo stream_get_contents($errorStream);
-
-// Close the streams
-fclose($errorStream);
-fclose($stream);
 
 
 ?>
