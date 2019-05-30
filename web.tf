@@ -125,9 +125,9 @@ resource "aws_instance" "web-1" {
 		sudo cp /tmp/index.html /var/www/html/index.html
 		sudo cp /tmp/info.php /var/www/html/info.php
 		#sudo chmod 777 /var/www/html/index.html
-		#sudo touch /var/www/html/nice-actimize.png
-		#sudo chmod 777 /var/www/html/nice-actimize.png
-		sudo cp /tmp/nice-actimize.png /var/www/html/nice-actimize.png
+		#sudo touch /var/www/html/logo.png
+		#sudo chmod 777 /var/www/html/logo.png
+		sudo cp /tmp/logo.png /var/www/html/logo.png
                 EOF
 
     //provisioner "remote-exec" {
@@ -137,8 +137,8 @@ resource "aws_instance" "web-1" {
     //     "sudo systemctl enable apache2",
     //     "sudo systemctl start apache2",
     //     "sudo chmod 777 /var/www/html/index.html",
-    //     "sudo touch /var/www/html/nice-actimize.png",
-    //     "sudo chmod 777 /var/www/html/nice-actimize.png"
+    //     "sudo touch /var/www/html/logo.png",
+    //     "sudo chmod 777 /var/www/html/logo.png"
     //    ]
     // }
 
@@ -148,8 +148,8 @@ resource "aws_instance" "web-1" {
      }
 
      provisioner "file" {
-        source = "nice-actimize.png"
-        destination = "/tmp/nice-actimize.png"
+        source = "logo.png"
+        destination = "/tmp/logo.png"
      }
 
      provisioner "file" {
@@ -166,7 +166,7 @@ resource "aws_instance" "web-1" {
 
      //provisioner "remote-exec" {
      //   inline = [
-     //   "sudo chmod 644 /var/www/html/nice-actimize.png"
+     //   "sudo chmod 644 /var/www/html/logo.png"
      //   ]
      //}
 
