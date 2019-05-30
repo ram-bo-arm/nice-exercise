@@ -23,7 +23,7 @@ resource "aws_elb" "web" {
 
   # The instance is registered automatically
 
-  instances                   = ["${aws_instance.web-1.id}"]
+  instances                   = ["${aws_instance.web[0].id}","${aws_instance.web[1].id}"]
   cross_zone_load_balancing   = true
   idle_timeout                = 400
   connection_draining         = true
@@ -33,6 +33,10 @@ resource "aws_elb" "web" {
         Name = "dani-elb"
     }
 
+}
+
+output "elb_dns_name" {
+  value = "${aws_elb.web.dns_name}"
 }
 
 
