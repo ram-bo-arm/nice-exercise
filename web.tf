@@ -1,84 +1,3 @@
-/*
-  Web Servers
-*/
-resource "aws_security_group" "web" {
-    name = "vpc_web"
-    description = "Allow incoming HTTP connections."
-
-    ingress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    ingress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    egress { # SQL Server
-        from_port = 1433
-        to_port = 1433
-        protocol = "tcp"
-        cidr_blocks = ["${var.private_subnet_cidr}"]
-    }
-    egress { # MySQL
-        from_port = 3306
-        to_port = 3306
-        protocol = "tcp"
-        cidr_blocks = ["${var.private_subnet_cidr}"]
-    }
-
-    egress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    egress {
-        from_port = 22
-        to_port = 22
-        protocol = "tcp"
-        cidr_blocks = ["${var.vpc_cidr}"]
-    }
-
-
-    egress {
-        from_port = -1
-        to_port = -1
-        protocol = "icmp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    vpc_id = "${aws_vpc.default.id}"
-
-    tags = {
-        Name = "dani-test-sg-public"
-    }
-}
-
 resource "tls_private_key" "web_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -98,50 +17,38 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+data "template_file" "web_user_data" {
+  template = "${file("www/user_data.tpl")}"
+  vars = {
+    private_key_pem = "${tls_private_key.web_key.private_key_pem}"
+    public_key_pem = "${tls_private_key.web_key.public_key_pem}"
+    public_key_openssh = "${tls_private_key.web_key.public_key_openssh}"
+  }
+}
 
-resource "aws_instance" "web-1" {
+
+resource "aws_instance" "web" {
     //ami = "${lookup(var.amis, var.aws_region)}"
     ami = "${data.aws_ami.ubuntu.id}"
-    availability_zone = "eu-west-1a"
+    availability_zone = "${var.aws_availability_zone}"
     instance_type = "m1.small"
-    //key_name = "${var.aws_key_name}"
     key_name = "${aws_key_pair.generated_key.key_name}"
     vpc_security_group_ids = ["${aws_security_group.web.id}"]
     subnet_id = "${aws_subnet.eu-west-1a-public.id}"
     associate_public_ip_address = true
     source_dest_check = false
+    private_ip = "10.0.0.1${count.index + 1}"
+    count = "${var.web_instance_count}"
+
+    user_data = "${data.template_file.web_user_data.rendered}"
 
     connection {
-	host = self.public_ip
-       type = "ssh"
-       user = "ubuntu"
-       private_key = "${file("~/.ssh/terraform_ec2_key")}"
+        host = self.public_ip
+        type = "ssh"
+        user = "ubuntu"
+        private_key = "${file("~/.ssh/terraform_ec2_key")}"
     }
 
-    user_data = <<-EOF
-		#!/bin/bash
-		sudo apt-get update
-		sudo apt-get install -y traceroute
-		sudo apt-get install -y apache2
-		sudo apt-get install -y php libapache2-mod-php php-mysql
-		sudo apt-get install -y libssh2-1 php-ssh2
-		sudo systemctl enable apache2
-		sudo systemctl restart apache2
-
-
-		sudo mkdir /var/www/.ssh
-		sudo echo "${tls_private_key.web_key.private_key_pem}" >> /var/www/.ssh/web_key	
-		sudo echo "${tls_private_key.web_key.public_key_pem}" >> /var/www/.ssh/web_key.pem	
-		sudo echo "${tls_private_key.web_key.public_key_openssh}" >> /var/www/.ssh/web_key.openssh	
-
-
-		sudo cp /tmp/index.html /var/www/html/index.html
-		sudo cp /tmp/info.php /var/www/html/info.php
-		#sudo chmod 777 /var/www/html/index.html
-		#sudo touch /var/www/html/logo.png
-		#sudo chmod 777 /var/www/html/logo.png
-		sudo cp /tmp/logo.png /var/www/html/logo.png
-                EOF
 
     //provisioner "remote-exec" {
     //   inline = [
@@ -156,17 +63,17 @@ resource "aws_instance" "web-1" {
     // }
 
      provisioner "file" {
-        source = "index.html"
+        source = "www/index.html"
         destination = "/tmp/index.html"
      }
 
      provisioner "file" {
-        source = "logo.png"
+        source = "www/logo.png"
         destination = "/tmp/logo.png"
      }
 
      provisioner "file" {
-        source = "info.php"
+        source = "www/info.php"
         destination = "/tmp/info.php"
      }
 
@@ -184,20 +91,29 @@ resource "aws_instance" "web-1" {
      //}
 
     tags = {
-        Name = "dani-test-ws"
+        Name = "dani-test-ws-${count.index + 1}"
     }
 }
 
 
-//resource "aws_eip" "web-1" {
-//    instance = "${aws_instance.web-1.id}"
+//resource "aws_eip" "web" {
+//    instance = "${aws_instance.web.id}"
 //    vpc = true
 //}
 
-output "web_server_ip" {
-  value = "${aws_instance.web-1.public_ip}"
+output "web_server_1_ip" {
+  value = "${aws_instance.web[0].public_ip}"
 }
 
-output "web_server_private_ip" {
-  value = "${aws_instance.web-1.private_ip}"
+output "web_server_1_private_ip" {
+  value = "${aws_instance.web[0].private_ip}"
+}
+
+
+output "web_server_2_ip" {
+  value = "${aws_instance.web[1].public_ip}"
+}
+
+output "web_server_2_private_ip" {
+  value = "${aws_instance.web[1].private_ip}"
 }
