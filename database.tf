@@ -1,11 +1,3 @@
-data "template_file" "database_user_data" {
-  template = "${file("database/user_data.tpl")}"
-  vars = {
-    public_key_openssh = "${tls_private_key.web_key.public_key_openssh}"
-  }
-}
-
-
 resource "aws_instance" "db-1" {
     //ami = "${lookup(var.amis, var.aws_region)}"
     ami = "${data.aws_ami.ubuntu.id}"
@@ -17,7 +9,7 @@ resource "aws_instance" "db-1" {
     source_dest_check = false 
     private_ip = "10.0.1.10"
 
-    user_data = "${data.template_file.database_user_data.rendered}"
+    user_data = "${file("database/user_data.sh")}"
 
     tags = {
         Name = "dani-test-db"
