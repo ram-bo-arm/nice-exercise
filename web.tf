@@ -1,8 +1,3 @@
-resource "tls_private_key" "web_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 # Get the AWS Ubuntu image
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -17,16 +12,6 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-data "template_file" "web_user_data" {
-  template = "${file("www/user_data.tpl")}"
-  vars = {
-    private_key_pem = "${tls_private_key.web_key.private_key_pem}"
-    public_key_pem = "${tls_private_key.web_key.public_key_pem}"
-    public_key_openssh = "${tls_private_key.web_key.public_key_openssh}"
-  }
-}
-
-
 resource "aws_instance" "web" {
     //ami = "${lookup(var.amis, var.aws_region)}"
     ami = "${data.aws_ami.ubuntu.id}"
@@ -40,7 +25,7 @@ resource "aws_instance" "web" {
     private_ip = "10.0.0.1${count.index + 1}"
     count = "${var.web_instance_count}"
 
-    user_data = "${data.template_file.web_user_data.rendered}"
+    user_data = "${file("www/user_data.sh")}"
 
     connection {
         host = self.public_ip
