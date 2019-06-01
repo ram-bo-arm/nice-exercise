@@ -16,8 +16,8 @@ echo "bind-address = 10.0.1.10" | sudo tee -a /etc/mysql/my.cnf
 
 sudo systemctl restart mysql
 
-mysql -u root --password=root -e "GRANT PROCESS ON *.* to 'web'@'10.0.0.11' IDENTIFIED BY 'web_pass';"
-mysql -u root --password=root -e "GRANT PROCESS ON *.* to 'web'@'10.0.0.12' IDENTIFIED BY 'web_pass';"
+mysql -u root --password=root -e "GRANT PROCESS ON *.* to 'web'@'10.0.1.12' IDENTIFIED BY 'web_pass';"
+mysql -u root --password=root -e "GRANT PROCESS ON *.* to 'web'@'10.0.1.13' IDENTIFIED BY 'web_pass';"
 
 #export DEBIAN_FRONTEND=noninteractive
 #sudo -E apt-get -q -y install mysql-server-5.7

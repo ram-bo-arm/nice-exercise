@@ -10,6 +10,8 @@ sudo apt-get install -y php libapache2-mod-php php-mysql
 sudo apt-get install -y mysql-client-core-5.7
 sudo apt-get install -y libssh2-1 php-ssh2
 
+sudo echo "${index_html}" | base64 --decode > /var/www/html/index.html
+sudo echo "${info_php}" | base64 --decode > /var/www/html/info.php
 
 sudo systemctl enable apache2
 sudo systemctl restart apache2

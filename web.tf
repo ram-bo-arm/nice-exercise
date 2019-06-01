@@ -12,6 +12,15 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+data "template_file" "web_user_data" {
+  template = "${file("www/user_data.tpl")}"
+  vars = {
+    index_html = "${filebase64("www/index.html")}"
+    info_php = "${filebase64("www/info.php")}"
+  }
+}
+
+
 resource "aws_instance" "web" {
     //ami = "${lookup(var.amis, var.aws_region)}"
     ami = "${data.aws_ami.ubuntu.id}"
@@ -19,20 +28,21 @@ resource "aws_instance" "web" {
     instance_type = "m1.small"
     key_name = "${aws_key_pair.generated_key.key_name}"
     vpc_security_group_ids = ["${aws_security_group.web.id}"]
-    subnet_id = "${aws_subnet.eu-west-1a-public.id}"
-    associate_public_ip_address = true
+    subnet_id = "${aws_subnet.eu-west-1a-private.id}"
+    //associate_public_ip_address = true
     source_dest_check = false
-    private_ip = "10.0.0.1${count.index + 1}"
+    private_ip = "10.0.1.1${count.index + 2}"
     count = "${var.web_instance_count}"
 
-    user_data = "${file("www/user_data.sh")}"
+    //user_data = "${file("www/user_data.sh")}"
+    user_data = "${data.template_file.web_user_data.rendered}"
 
-    connection {
-        host = self.public_ip
-        type = "ssh"
-        user = "ubuntu"
-        private_key = "${file("~/.ssh/terraform_ec2_key")}"
-    }
+    //connection {
+    //    host = self.public_ip
+    //    type = "ssh"
+    //    user = "ubuntu"
+    //    private_key = "${file("~/.ssh/terraform_ec2_key")}"
+    //}
 
 
     //provisioner "remote-exec" {
@@ -47,20 +57,20 @@ resource "aws_instance" "web" {
     //    ]
     // }
 
-     provisioner "file" {
-        source = "www/index.html"
-        destination = "/tmp/index.html"
-     }
+     //provisioner "file" {
+     //   source = "www/index.html"
+     //   destination = "/tmp/index.html"
+     //}
 
-     provisioner "file" {
-        source = "www/logo.png"
-        destination = "/tmp/logo.png"
-     }
+     //provisioner "file" {
+     //   source = "www/logo.png"
+     //   destination = "/tmp/logo.png"
+     //}
 
-     provisioner "file" {
-        source = "www/info.php"
-        destination = "/tmp/info.php"
-     }
+     //provisioner "file" {
+     //   source = "www/info.php"
+     //   destination = "/tmp/info.php"
+     //}
 
 
      //provisioner "remote-exec" {
