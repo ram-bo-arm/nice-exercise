@@ -22,9 +22,15 @@ variable "public_subnet_cidr" {
     default = "10.0.0.0/24"
 }
 
-variable "private_subnet_cidr" {
-    description = "CIDR for the Private Subnet"
+variable "private_web_subnet_cidr" {
+    description = "CIDR for the Private Web Subnet"
     default = "10.0.1.0/24"
+}
+
+
+variable "private_jenkins_subnet_cidr" {
+    description = "CIDR for the Private Jenkins Subnet"
+    default = "10.0.2.0/24"
 }
 
 variable "web_instance_count" {

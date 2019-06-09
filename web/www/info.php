@@ -83,7 +83,7 @@ echo "<br/>";
 //$command="sudo traceroute -I wix.com |  grep -v 'traceroute to'| awk '{printf \"%-3s %-50s %-20s %-10s %-10s %-10s\\n\", $1,$2,$3,$4,$6,$8}'";
 echo "<table border='1' >";
 $command="sudo -S traceroute -I wix.com |  grep -v 'traceroute to'| awk '{printf \"<tr><td>%-3s</td><td>%-50s</td><td>%-10s</td><td>%-10s</td><td>%-10s</td></tr>\", $1,$2,$4,$6,$8}'";
-execute($command,null, $out, $out, 30);
+execute($command,null, $out, $out, 120);
 echo "$out";
 echo "</table>";
 

@@ -6,13 +6,13 @@ resource "aws_security_group" "nat" {
         from_port = 80
         to_port = 80
         protocol = "tcp"
-        cidr_blocks = ["${var.private_subnet_cidr}"]
+        cidr_blocks = ["${var.private_web_subnet_cidr}","${var.private_jenkins_subnet_cidr}"]
     }
     ingress {
         from_port = 443
         to_port = 443
         protocol = "tcp"
-        cidr_blocks = ["${var.private_subnet_cidr}"]
+        cidr_blocks = ["${var.private_web_subnet_cidr}","${var.private_jenkins_subnet_cidr}"]
     }
     ingress {
         from_port = 22
@@ -27,6 +27,12 @@ resource "aws_security_group" "nat" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
+    egress {
+        from_port = 8080
+        to_port = 8080
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
     egress {
         from_port = 80
         to_port = 80

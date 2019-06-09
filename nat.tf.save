@@ -1,22 +1,24 @@
-data "aws_ami" "amazon_nat" {
+# Get the AWS Ubuntu image
+amazon/amzn-ami-vpc-nat-hvm-2018.03.0.20180412-x86_64-ebs
+
+data "aws_ami" "nat_ami" {
   most_recent = true
   filter {
     name = "name"
-    values = ["amzn-ami-vpc-nat-hvm-*-x86_64-ebs"]
+    values = ["amazon/amzn-ami-vpc-nat-hvm-*-x86_64-ebs"]
   }
-  //filter {
-  //  name = "virtualization-type"
-  //  values = ["hvm"]
-  //}
-  owners = ["137112412989"] # Amazon
+    name = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
 }
 
 
+amzn-ami-vpc-nat
 
 resource "aws_instance" "nat" {
 
-    #ami = "ami-30913f47" # this is a special ami preconfigured to do NAT
-    ami = "${data.aws_ami.amazon_nat.id}"
+    ami = "ami-30913f47" # this is a special ami preconfigured to do NAT
     availability_zone = "${var.aws_availability_zone}"
     instance_type = "m1.small"
     key_name = "${aws_key_pair.generated_key.key_name}"
@@ -25,8 +27,6 @@ resource "aws_instance" "nat" {
     associate_public_ip_address = true
     source_dest_check = false
     private_ip = "10.0.0.10"
-    iam_instance_profile   = "${aws_iam_instance_profile.ssm_instance_profile.name}"
-
 
     tags = {
         Name = "dani-test-nat"

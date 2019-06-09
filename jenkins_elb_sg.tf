@@ -1,16 +1,10 @@
-resource "aws_security_group" "web" {
-    name = "web_sg"
+resource "aws_security_group" "jenkins_elb" {
+    name = "jenkins_elb_sg"
     description = "Allow incoming HTTP connections."
 
     ingress {
         from_port = 80
         to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    ingress {
-        from_port = 443
-        to_port = 443
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -29,17 +23,10 @@ resource "aws_security_group" "web" {
     }
 
     egress {
-        from_port = 80
-        to_port = 80
+        from_port = 8080
+        to_port = 8080
         protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    egress {
-        from_port = 443
-        to_port = 443
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+	cidr_blocks = ["${var.vpc_cidr}"]
     }
 
     egress {
@@ -73,7 +60,7 @@ resource "aws_security_group" "web" {
     vpc_id = "${aws_vpc.default.id}"
 
     tags = {
-        Name = "dani-test-web-sg"
+        Name = "dani-test-jenkins-sg"
     }
 }
 
