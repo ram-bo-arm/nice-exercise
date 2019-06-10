@@ -29,6 +29,8 @@ resource "aws_elb" "web" {
   connection_draining         = true
   connection_draining_timeout = 400
 
+  count = "${var.web_instance_count > 0 ? 1 : 0}"
+
     tags = {
         Name = "dani-web-elb"
     }
@@ -36,7 +38,7 @@ resource "aws_elb" "web" {
 }
 
 output "web_elb_dns_name" {
-  value = "${aws_elb.web.dns_name}"
+  value = "${aws_elb.web[0].dns_name}"
 }
 
 
