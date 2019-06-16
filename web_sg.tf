@@ -71,7 +71,8 @@ resource "aws_security_group" "web" {
     }
 
     vpc_id = "${aws_vpc.default.id}"
-
+    count = "${var.web_instance_count > 0 ? 1 : 0}"
+    
     tags = {
         Name = "dani-test-web-sg"
     }

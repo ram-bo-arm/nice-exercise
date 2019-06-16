@@ -3,6 +3,7 @@ terraform {
   backend "s3" {
     bucket = "dani-test-terraform-state"
     key = "dani-test"
+    encrypt = true
     region = "eu-west-1"
   }
 }

@@ -4,7 +4,7 @@ resource "aws_elb" "jenkins" {
   # The same availability zone as our instance
   subnets = ["${aws_subnet.eu-west-1a-public.id}"]
 
-  security_groups = ["${aws_security_group.jenkins_elb.id}"]
+  security_groups = ["${aws_security_group.jenkins_elb[0].id}"]
 
   listener {
     instance_port     = 8080
@@ -24,20 +24,22 @@ resource "aws_elb" "jenkins" {
 
   # The instance is registered automatically
 
-  instances                   = ["${aws_instance.jenkins.id}"]
+  instances                   = ["${aws_instance.jenkins[0].id}"]
   cross_zone_load_balancing   = true
   idle_timeout                = 400
   connection_draining         = true
   connection_draining_timeout = 400
 
-    tags = {
-        Name = "dani-jenkins-elb"
-    }
+  count = "${var.jenkins_instance_count > 0 ? 1 : 0}"
+
+  tags = {
+      Name = "dani-jenkins-elb"
+  }
 
 }
 
 output "jenkins_elb_dns_name" {
-  value = "${aws_elb.jenkins.dns_name}"
+  value = "${aws_elb.jenkins[0].dns_name}"
 }
 
 

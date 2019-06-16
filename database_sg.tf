@@ -6,13 +6,13 @@ resource "aws_security_group" "db" {
         from_port = 1433
         to_port = 1433
         protocol = "tcp"
-        security_groups = ["${aws_security_group.web.id}"]
+        security_groups = ["${aws_security_group.web[0].id}"]
     }
     ingress { # MySQL
         from_port = 3306
         to_port = 3306
         protocol = "tcp"
-        security_groups = ["${aws_security_group.web.id}"]
+        security_groups = ["${aws_security_group.web[0].id}"]
     }
 
     ingress {
@@ -56,6 +56,7 @@ resource "aws_security_group" "db" {
     }
 
     vpc_id = "${aws_vpc.default.id}"
+    count = "${var.web_instance_count > 0 ? 1 : 0}"
 
     tags = {
         Name = "dani-test-sg-private"

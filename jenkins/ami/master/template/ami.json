@@ -51,8 +51,8 @@
     },
     {
        "type": "file",
-       "source": "config/jenkins.yaml",
-       "destination": "/tmp/jenkins.yaml"
+       "source": "groovy/disable_initial_wizard.groovy",
+       "destination": "/tmp/disable_initial_wizard.groovy"
     },
     {
       "type": "shell",

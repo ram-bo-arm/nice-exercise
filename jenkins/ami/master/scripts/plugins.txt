@@ -1,0 +1,2 @@
+configuration-as-code:latest
+ec2:latest

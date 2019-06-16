@@ -8,6 +8,14 @@ resource "aws_security_group" "jenkins" {
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
+
+    ingress {
+        from_port = 50000
+        to_port = 50000
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
     ingress {
         from_port = -1
         to_port = -1
@@ -25,6 +33,13 @@ resource "aws_security_group" "jenkins" {
     egress {
         from_port = 8080
         to_port = 8080
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 50000
+        to_port = 50000
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -72,6 +87,7 @@ resource "aws_security_group" "jenkins" {
     //}
 
     vpc_id = "${aws_vpc.default.id}"
+    count = "${var.jenkins_instance_count > 0 ? 1 : 0}"
 
     tags = {
         Name = "dani-test-jenkins-sg"

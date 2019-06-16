@@ -27,8 +27,8 @@ resource "aws_instance" "web" {
     availability_zone = "${var.aws_availability_zone}"
     instance_type = "m1.small"
     key_name = "${aws_key_pair.generated_key.key_name}"
-    vpc_security_group_ids = ["${aws_security_group.web.id}"]
-    subnet_id = "${aws_subnet.eu-west-1a-private-web.id}"
+    vpc_security_group_ids = ["${aws_security_group.web[0].id}"]
+    subnet_id = "${aws_subnet.eu-west-1a-private-web[0].id}"
     //associate_public_ip_address = true
     source_dest_check = false
     private_ip = "10.0.1.1${count.index + 2}"

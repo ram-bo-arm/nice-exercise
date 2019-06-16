@@ -58,6 +58,7 @@ resource "aws_security_group" "jenkins_elb" {
     //}
 
     vpc_id = "${aws_vpc.default.id}"
+    count = "${var.jenkins_instance_count > 0 ? 1 : 0}"
 
     tags = {
         Name = "dani-test-jenkins-sg"

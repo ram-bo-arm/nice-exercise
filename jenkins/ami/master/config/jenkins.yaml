@@ -1,0 +1,85 @@
+jenkins:
+  numExecutors: 12
+  scmCheckoutRetryCount: 2
+  mode: NORMAL
+
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+
+  slaveAgentPort: 50000
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "${LOCAL_ID}"
+        password: "${LOCAL_PASS}"
+
+  clouds:
+    - amazonEC2:
+        cloudName: "ec2"
+        instanceCapStr: 2
+        # this shouldn't be needed, since without explicit creds this should already be used
+        # but let's be explicit to avoid issues.
+        # Reminder: the following key has multiple lines
+        privateKey: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEowIBAAKCAQEArhQNkPfciUcXOH3lCeilDbEc0Lx5Cj/3P5gFThAuz9GcAH76KSsxBkdbIst8
+          /fAlmqqKnoLGqkB1Z3eGisEUb3+ufBTNhH3aPCFo0I4sRtbCP1wJcBx7TSirWVQ11BZv75ewqM1X
+          9J6ZKj5X8EpAvxK41F6AJY2qHDkLXF+yJK+hnp9BZ3BvXwV+idGQsXwE/m0jAa63O+HCU+0eHqme
+          K5fJyqrWmrgOLsoghJG24p2mxqR/7AUzTG6OJlZPR0sGYX6WTa6KbobfUtuubfGwvbGn34itynOj
+          CYqwEO3GDCxobKFjA1y/4pAzMjQxMK/EN07+Md75/4kWcXrvxL516wIDAQABAoIBAHYP46OOd2Qj
+          cvw9ZjlyL385v/FR4kWxXF8lG3P2RclswAEWHVQOlxFLE+RlXkBbvyVGxPz8dQDC9t1Vk0pH6TQ1
+          xIEjGr/hG0Hs5smLozvoK5YNNdlzd6y9CHltQ5S0Iva8SnQx0JV3eynLXpj5wy/T4scl0IOnsNez
+          WKEtxgRadzv6eTuI2loAXp/HSWSycTgiah0J3x+6MZldaTb7hVIt5+Ajb/Pf+jR7L5invCunxnMU
+          +r1pEEKS7vNJHH49VtCrUkg5F3gr2mMj+G53aqHv+D3y6wzr2ZmNB+A9SaQmgsWGq6zkzfiwdjSi
+          Xp+1bEOf8MdBJGEdfqubmCYE+wECgYEA+bvh116M2nNCc0ozHLQIBqDYHf4fM7nCEA36YCfeBGR1
+          0enhGqeg8hqxaHawnhGiNrC1/9Hc+FCdu/6/NgX/tj8lYssoMH96PCA4u8H7Ti2zYI7DqwJYhc//
+          YLaOOeD9oC0htW/5vXAYR+hVIHWOC2l5nxhDrQiN/4N/aUGQ6+8CgYEAsnI2Mj9ua/0d8utbf1kT
+          qPinb+oC6TCD29BGZtrA7qnm1yzXR7P3U/1NxoADoFpzgCZcc3aoDzx9C59ABASCTI07sgPXcogA
+          61vuK4QPrLED11yvZTObuL9PxWqP9oEpB2U6GItd4OsDWjYCV07UPqZSZbGOJeEJpqKie/9qicUC
+          gYBPuZU9piedTZJ3L8blcOvnAc48tPXNE45Khcvaip+sE04xt1JvqfgNkkv0p3921vZMM1nG036R
+          n1rbu1Xbr0qVKc+LnIO2B9xD+Z1jA2hw6tILD0iT/Wm5Pk+u1ljNTXBqhD3wqFC4E2MNAbS7agvw
+          xLlY+uwP/10lpxszxQS47QKBgDpIPVVKDGmu4UI/BsJgOKCenilaWBsLonV/4A6l8g/BZEjxN1sO
+          93/yIp3rn8OW51R6swVvQtK/IeRS3hix1FDmbBHnWU3qB8rXWsHRv0DbC/MiLZMzOPAtZAOJm32a
+          j+j/ceskUcQtXgnvy/HyKDZSImVeiZvrlThctA8lzAk1AoGBAK07bYciTy3GQ57HzK/a6UI5WDUP
+          +kKm9IIhxKCPRAfHPiBZHOkNjhpOoH3G75YauVlkjKNXDRG4Ly+XG1RzrwQPKUYeC+ssx17GTN2o
+          NZmeZ1+w5UbWxyCUkdZRgRWPpTHPUAr25eZ85W/am7UGCl8wRBSJuBT/uRCE9BLrqze1
+          -----END RSA PRIVATE KEY-----
+        region: "eu-west-1"
+        templates:
+        - ami: "ami-0658eb5d90f574adf"
+          amiType:
+            unixData:
+              sshPort: "22"
+          associatePublicIp: false
+          connectBySSHProcess: false
+          connectionStrategy: PRIVATE_IP
+          deleteRootOnTermination: false
+          description: "eee"
+          ebsOptimized: false
+          idleTerminationMinutes: "30"
+          maxTotalUses: -1
+          mode: NORMAL
+          monitoring: false
+          numExecutors: 3
+          t2Unlimited: false
+          type: T2Small
+          useDedicatedTenancy: false
+          useEphemeralDevices: false
+          subnetId: "subnet-03cf45a5af33f1382"
+          securityGroups: "jenkins_slave_sg"
+          labelString: "small-slave"
+          remoteAdmin: "ubuntu"
+          tags:
+          - name: "Name"
+            value: "node-jenkins-slave"
+          - name: "owner"
+            value: "dani-test"
+        useInstanceProfileForCredentials: true
+
+security:
+  remotingCLI:
+    enabled: false

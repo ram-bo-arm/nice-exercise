@@ -34,7 +34,11 @@ variable "private_jenkins_subnet_cidr" {
 }
 
 variable "web_instance_count" {
-  default = "2"
+  default = "0"
+}
+
+variable "jenkins_instance_count" {
+  default = "1"
 }
 
 variable "aws_availability_zone" {

@@ -1,7 +1,19 @@
 #!/bin/bash
 
 
+sudo add-apt-repository ppa:openjdk-r/ppa
+
+sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
+sudo update-alternatives --config java
+
+if [ -z $(which java) ]
+then
+	sudo apt-get install -y openjdk-8-jdk
+	sudo update-alternatives --config java
+else
+	echo "java already installed"
+fi
 
 # jenkins version being bundled in this docker image
 #JENKINS_VERSION='2.138.2'
@@ -28,10 +40,19 @@ sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sour
 sudo apt-get update
 
 sudo apt-get install -y python unzip
+sudo apt-get install -y awscli
 
 
-wget https://pkg.jenkins.io/debian-stable/binary/jenkins_2.164.3_all.deb -O /tmp/jenkins_2.164.3_all.deb
+wget https://pkg.jenkins.io/debian-stable/binary/jenkins_2.176.1_all.deb -O /tmp/jenkins_2.164.3_all.deb
 
 sudo apt-get install -y /tmp/jenkins_2.164.3_all.deb
 
 sudo sed -i s/JAVA_ARGS=\"-Djava.awt.headless=true\"/JAVA_ARGS=\""-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false\""/g /etc/default/jenkins
+
+sudo mkdir /var/lib/jenkins/init.groovy.d
+
+sudo cp /tmp/disable_initial_wizard.groovy /var/lib/jenkins/init.groovy.d/disable_initial_wizard.groovy
+
+#sudo systemctl restart jenkins
+
+#sudo rm /var/lib/jenkins/init.groovy.d/disable_initial_wizard.groovy
