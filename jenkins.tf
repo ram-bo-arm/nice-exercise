@@ -38,6 +38,8 @@ data "template_file" "jenkins_user_data" {
   template = "${file("jenkins/ami/master/user-data/user_data.tpl")}"
   vars = {
     jenkins_yaml = "${base64encode(data.template_file.jenkins_yaml.rendered)}"
+    aws_region = "${var.aws_region}"
+    kms_key = "${aws_kms_key.vault_test.id}"
   }
 }
 

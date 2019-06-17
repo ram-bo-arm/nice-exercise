@@ -28,7 +28,10 @@ resource "aws_iam_policy" "jenkins_master_policy" {
   "Statement": [
     {
       "Action": [
-        "ec2:*"
+        "ec2:*",
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:DescribeKey"
       ],
       "Effect": "Allow",
       "Resource": "*"
