@@ -24,7 +24,7 @@ jenkins:
         # this shouldn't be needed, since without explicit creds this should already be used
         # but let's be explicit to avoid issues.
         # Reminder: the following key has multiple lines
-        privateKey: "$${EC2_KEY}"
+        privateKey: "$${ec2_key}"
         region: "eu-west-1"
         templates:
         - ami: "${jenkins_slave_ami}"
@@ -50,6 +50,7 @@ jenkins:
           securityGroups: "jenkins_slave_sg"
           labelString: "small-slave"
           remoteAdmin: "ubuntu"
+          remoteFS: "/tmp"
           tags:
           - name: "Name"
             value: "node-jenkins-slave"

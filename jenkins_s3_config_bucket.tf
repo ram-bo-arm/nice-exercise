@@ -15,6 +15,12 @@ resource "aws_s3_bucket_policy" "jenkins_config" {
        "Principal": { "AWS": "${aws_iam_role.jenkins_master_role.arn}" } ,
        "Action": "s3:GetObject",
        "Resource": "arn:aws:s3:::dani-test-jenkins/config/*"  
+    },
+    {
+       "Effect": "Allow",
+       "Principal": { "AWS": "${aws_iam_role.jenkins_master_role.arn}" } ,
+       "Action": "s3:PutObject",
+       "Resource": "arn:aws:s3:::dani-test-jenkins/config/jenkins_token"
     }
   ]
 }

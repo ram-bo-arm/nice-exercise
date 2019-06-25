@@ -53,6 +53,6 @@ sudo mkdir /var/lib/jenkins/init.groovy.d
 
 sudo cp /tmp/disable_initial_wizard.groovy /var/lib/jenkins/init.groovy.d/disable_initial_wizard.groovy
 
-#sudo systemctl restart jenkins
+sudo systemctl disable jenkins
 
 #sudo rm /var/lib/jenkins/init.groovy.d/disable_initial_wizard.groovy

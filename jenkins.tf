@@ -46,7 +46,7 @@ data "template_file" "jenkins_user_data" {
 resource "aws_instance" "jenkins" {
     ami = "${data.aws_ami.jenkins-ubuntu.id}"
     availability_zone = "${var.aws_availability_zone}"
-    instance_type = "m1.small"
+    instance_type = "t2.small"
     key_name = "${aws_key_pair.generated_key.key_name}"
     vpc_security_group_ids = ["${aws_security_group.jenkins[0].id}"]
     subnet_id = "${aws_subnet.eu-west-1a-private-jenkins[0].id}"
